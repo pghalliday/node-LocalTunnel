@@ -30,7 +30,7 @@ describe('LocalTunnel', function() {
     });    
   });
 
-  it('should start a localtunnel', function(done) {
+  it('should start the localtunnel client', function(done) {
     this.timeout(10000);
     var localTunnel = new LocalTunnel(PORT);
     localTunnel.on('error', function(error) {
@@ -84,7 +84,7 @@ describe('LocalTunnel', function() {
     });
   });
 
-  it('should stop when the process exits', function(done) {
+  it('should stop the localtunnel client when the process exits', function(done) {
     this.timeout(10000);
     var child = fork('./test/support/childProcess.js', [PORT]);
     child.on('message', function(message) {
