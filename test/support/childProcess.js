@@ -1,11 +1,10 @@
 var LocalTunnel = require('../../');
 
 var localTunnel = new LocalTunnel(process.argv[2]);
-localTunnel.start(function(error, hostname) {
-  if (error) {
-    process.send({error: error.toString()});
-  } else {
-    process.send({hostname: hostname});
-  }
+localTunnel.on('error', function(error) {
+  process.send({error: error.toString()});	
+});
+localTunnel.start(function(hostname) {
+  process.send({hostname: hostname});
 });
 

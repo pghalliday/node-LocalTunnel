@@ -1,3 +1,6 @@
+var util = require('util'),
+    EventEmitter = require('events').EventEmitter;
+
 function LocalTunnel(port, binary) {
   var self = this,
       child,
@@ -15,7 +18,7 @@ function LocalTunnel(port, binary) {
   
   self.start = function(callback) {
     if (started) {
-      callback(new Error('local tunnel already started'));
+      self.emit('error', new Error('local tunnel already started'));
     } else {
       var stdoutData = '';
       var stdout;
@@ -35,19 +38,23 @@ function LocalTunnel(port, binary) {
       }
 
       child.on('exit', function(code, signal) {
-        if (!started) {
-          callback(new Error('localtunnel failed to start:\n' + stdoutData));
-        }
         child = null;
+        if (!started) {
+          self.emit('error', new Error('localtunnel failed to start:\n' + stdoutData));
+        } else {
+          started = false;
+          self.emit('stopped');
+        }
       });
 
       stdout.setEncoding();
       stdout.on('data', function(data) {
         stdoutData += data.toString();
         var match = stdoutData.match(/[a-z0-9]{4}\.localtunnel\.com/g);
-        if (match) {
+        if (match && !started) {
           started = true;
-          callback(null, match[0]);
+          self.once('started', callback);
+          self.emit('started', match[0]);
         }
       });
     }
@@ -55,15 +62,13 @@ function LocalTunnel(port, binary) {
   
   self.stop = function(callback) {
     if (!started) {
-      callback(new Error('localtunnel not active'));
+      self.emit('error', new Error('localtunnel not active'));
     } else {
-      child.on('exit', function(code, signal) {
-        started = false;
-        callback();
-      });
+      self.once('stopped', callback);
       child.kill();
     }
   };
 }
+util.inherits(LocalTunnel, EventEmitter);
 
 module.exports = LocalTunnel;
