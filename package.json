@@ -21,16 +21,15 @@
       "url": "https://github.com/pghalliday/node-localtunnel/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "src/index.js",
+  "main": "src/LocalTunnel.js",
   "engines": {
     "node": ">= 0.8.12"
   },
   "scripts": {
     "test": "grunt"
   },
-  "dependencies": {},
-  "optionalDependencies": {
-    "pty.js": "0.1.2"
+  "dependencies": {
+    "ChildKiller": "https://github.com/pghalliday/ChildKiller/archive/master.tar.gz"
   },
   "devDependencies": {
     "grunt": "0.3.17",

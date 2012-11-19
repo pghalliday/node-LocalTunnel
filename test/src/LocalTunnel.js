@@ -1,47 +1,28 @@
 var expect = require('expect.js'),
     LocalTunnel = require('../../'),
-    http = require('http'),
-    fork = require('child_process').fork;
+    http = require('http');
 
 var PORT = 8080;
 var TEST_RESPONSE = "This is a test";
-var LOCALTUNNEL_NOT_FOUND_RESPONSE = "Not found";
 
 describe('LocalTunnel', function() {
-  it('should error if the binary does not exist', function(done) {
-    var localTunnel = new LocalTunnel(PORT, 'blahblah');
-    localTunnel.on('error', function(error) {
-      expect(error.message).to.contain('localtunnel failed to start');
-      done();
+  var server;
+  
+  before(function(done) {
+    server = http.createServer(function(request, response) {
+      response.end(TEST_RESPONSE);
     });
-    localTunnel.start(function(hostname) {
-      expect().fail('should not get started event');
-    });
+    server.listen(PORT, done);
   });
 
-  it('should error if stopped before started', function(done) {
-    var localTunnel = new LocalTunnel(PORT);
-    localTunnel.on('error', function(error) {
-      expect(error.message).to.be('localtunnel not active');
-      done();
-    });
-    localTunnel.stop(function() {
-      expect().fail('should not get stopped event');
-    });    
-  });
-
-  it('should start the localtunnel client', function(done) {
+  it('should start and stop the localtunnel client', function(done) {
     this.timeout(10000);
     var localTunnel = new LocalTunnel(PORT);
-    localTunnel.on('error', function(error) {
-      expect().fail('Error encountered starting the tunnel:\n' + error);
-    });
-    localTunnel.start(function(hostname) {
-      expect(hostname).to.contain('localtunnel.com');
-      var server = http.createServer(function(request, response) {
-        response.end(TEST_RESPONSE);
-      });
-      server.listen(PORT, function() {
+    localTunnel.start(function(error, hostname) {
+      if (error) {
+        expect().fail('Error encountered starting the tunnel:\n' + error);
+      } else {
+        expect(hostname).to.contain('localtunnel.com');
         http.get({
           hostname: hostname
         }, function(response) {
@@ -53,63 +34,59 @@ describe('LocalTunnel', function() {
           });
           response.on('end', function() {
             expect(responseData).to.equal(TEST_RESPONSE);
-            
-            server.close(function() {
-              localTunnel.stop(done);
+            localTunnel.stop(function(error) {
+              if (error) {
+                expect().fail('Error encountered stopping the tunnel:\n' + error);
+              } else {
+                done();
+              }
             });
           });
         });
-      });
+      }
     });
+  });
+
+  it('should error if the binary does not exist', function(done) {
+    var localTunnel = new LocalTunnel(PORT, 'blahblah');
+    localTunnel.start(function(error, hostname) {
+      expect(error.message).to.contain('child failed to start');
+      expect(hostname).to.not.be.ok();
+      done();
+    });
+  });
+
+  it('should error if stopped before started', function(done) {
+    var localTunnel = new LocalTunnel(PORT);
+    localTunnel.stop(function(error) {
+      expect(error.message).to.be('child not started');
+      done();
+    });    
   });
 
   it('should error if started when already running', function(done) {
     this.timeout(10000);
     var localTunnel = new LocalTunnel(PORT);
-    function tempErrorHandler(error) {
-      expect().fail('Error encountered starting the tunnel:\n' + error);
-    }
-    localTunnel.on('error', tempErrorHandler);
-    localTunnel.start(function(hostname) {
-      localTunnel.removeListener('error', tempErrorHandler);
-      localTunnel.on('error', function(error) {
-        expect(error.message).to.be('local tunnel already started');
-        localTunnel.stop(function(error) {
-          done(error);
-        });
-      });
-      localTunnel.start(function(hostname) {
-        expect().fail('should not get started event');
-      });
-    });
-  });
-
-  it('should stop the localtunnel client when the process exits', function(done) {
-    this.timeout(10000);
-    var child = fork('./test/support/childProcess.js', [PORT]);
-    child.on('message', function(message) {
-      if (message.error) {
-        expect().fail('Error encountered starting the tunnel:\n' + message.error);
-        child.on('exit', done);
+    localTunnel.start(function(error, hostname) {
+      if (error) {
+        expect().fail('Error encountered starting the tunnel:\n' + error);
       } else {
-        expect(message.hostname).to.contain('localtunnel.com');
-        child.on('exit', function(code, signal) {
-          var server = http.createServer(function(request, response) {
-            response.end(TEST_RESPONSE);
-          });
-          server.listen(PORT, function() {
-            http.get({
-              hostname: message.hostname
-            }, function(response) {
-              expect(response.statusCode).to.equal(501);
-              response.on('end', function() {
-                server.close(done);
-              });
-            });
+        localTunnel.start(function(error, hostname) {
+          expect(error.message).to.be('child already started');
+          expect(hostname).to.not.be.ok();
+          localTunnel.stop(function(error) {
+            if (error) {
+              expect().fail('Error encountered stopping the tunnel:\n' + error);
+            } else {
+              done();
+            }
           });
         });
       }
-      child.kill();
     });
+  });
+  
+  after(function(done) {
+    server.close(done);
   });
 });

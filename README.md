@@ -6,7 +6,6 @@ Node.js wrapper for the localtunnel ruby client
 ## Features
 
 - should start the localtunnel client
-- should stop the localtunnel client when the process exits
 - should error if the binary does not exist
 - should error if stopped before started
 - should error if started when already running
@@ -29,12 +28,21 @@ npm install node-localtunnel
 var LocalTunnel = require('node-localtunnel');
 
 var localTunnel = new LocalTunnel(8080);
-localTunnel.on('error', function(error) {
-  console.log(error);
-});
-localTunnel.start(function(hostname) {
-  // Now forwarding to local port 8080 through localtunnel.com
-  // The assigned hostname is given in the hostname parameter
+localTunnel.start(function(error, hostname) {
+  if (error) {
+    console.log(error);
+  } else {
+    // Now forwarding to local port 8080 through localtunnel.com
+    // The assigned hostname is given in the hostname parameter
+
+    localTunnel.stop(function(error) {
+      if (error) {
+        console.log(error);
+      } else {
+        // tunnel has stopped
+      }
+    });
+  }
 });
 ```
 
