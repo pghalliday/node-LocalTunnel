@@ -19,13 +19,13 @@ http://progrium.com/localtunnel/
 ## Installation
 
 ```
-npm install node-localtunnel
+npm install localtunnel-wrapper
 ```
 
 ## API
 
 ```javascript
-var LocalTunnel = require('node-localtunnel');
+var LocalTunnel = require('localtunnel-wrapper');
 
 var localTunnel = new LocalTunnel(8080);
 localTunnel.start(function(error, hostname) {
@@ -52,9 +52,6 @@ localTunnel.start(function(error, hostname) {
 
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using ``./grunt.sh`` or ``.\grunt.bat``.
-
-## Release History
-_(Nothing yet)_
 
 ## License
 Copyright (c) 2012 Peter Halliday  

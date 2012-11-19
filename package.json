@@ -1,8 +1,8 @@
 {
-  "name": "node-localtunnel",
+  "name": "localtunnel-wrapper",
   "description": "Node.js wrapper for the localtunnel ruby client",
   "version": "0.0.1",
-  "homepage": "https://github.com/pghalliday/node-localtunnel.git",
+  "homepage": "https://github.com/pghalliday/node-LocalTunnel.git",
   "author": {
     "name": "Peter Halliday",
     "email": "pghalliday@gmail.com",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/pghalliday/node-localtunnel.git"
+    "url": "git://github.com/pghalliday/node-LocalTunnel.git"
   },
   "bugs": {
-    "url": "https://github.com/pghalliday/node-localtunnel/issues"
+    "url": "https://github.com/pghalliday/node-LocalTunnel/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/pghalliday/node-localtunnel/blob/master/LICENSE-MIT"
+      "url": "https://github.com/pghalliday/node-LocalTunnel/blob/master/LICENSE-MIT"
     }
   ],
   "main": "src/LocalTunnel.js",
@@ -29,12 +29,16 @@
     "test": "grunt"
   },
   "dependencies": {
-    "ChildKiller": "https://github.com/pghalliday/ChildKiller/archive/master.tar.gz"
+    "child-daemon": "https://github.com/pghalliday/node-ChildDaemon/archive/master.tar.gz"
   },
   "devDependencies": {
     "grunt": "0.3.17",
     "grunt-mocha-test": "0.0.1",
     "expect.js": "~0.2.0"
   },
-  "keywords": []
+  "keywords": [
+    "localtunnel",
+    "spawn",
+    "child_process"
+  ]
 }

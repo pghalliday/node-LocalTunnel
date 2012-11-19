@@ -1,9 +1,9 @@
 var util = require('util'),
-    ChildKiller = require('ChildKiller');
+    ChildDaemon = require('child-daemon');
 
 function LocalTunnel(port, binary) {
   binary = binary || 'localtunnel';
-  ChildKiller.call(
+  ChildDaemon.call(
     this,
     binary,
     [port],
@@ -18,6 +18,6 @@ function LocalTunnel(port, binary) {
     });
   };
 }
-util.inherits(LocalTunnel, ChildKiller);
+util.inherits(LocalTunnel, ChildDaemon);
 
 module.exports = LocalTunnel;
