@@ -47,15 +47,6 @@ describe('LocalTunnel', function() {
     });
   });
 
-  it('should error if the binary does not exist', function(done) {
-    var localTunnel = new LocalTunnel(PORT, 'blahblah');
-    localTunnel.start(function(error, hostname) {
-      expect(error.message).to.contain('child failed to start');
-      expect(hostname).to.not.be.ok();
-      done();
-    });
-  });
-
   it('should error if stopped before started', function(done) {
     var localTunnel = new LocalTunnel(PORT);
     localTunnel.stop(function(error) {
