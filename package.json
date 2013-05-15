@@ -1,7 +1,7 @@
 {
   "name": "localtunnel-wrapper",
   "description": "Node.js wrapper for the localtunnel ruby client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/pghalliday/node-LocalTunnel.git",
   "author": {
     "name": "Peter Halliday",
@@ -29,7 +29,7 @@
     "test": "grunt"
   },
   "dependencies": {
-    "child-daemon": "0.0.1"
+    "child-daemon": "~0.0.2"
   },
   "devDependencies": {
     "grunt": "0.3.17",
